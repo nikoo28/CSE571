@@ -105,20 +105,26 @@ def depthFirstSearch(problem):
         if fringe.isEmpty():
             return []
 
+        # Removing that vertex from queue, whose neighbour will be
+        # visited now
         nextNode = fringe.pop()
 
         # Check if the goal state is reached in the next node
         if problem.isGoalState(nextNode[0]):
             return nextNode[1]
 
+        # If the node has not been visited, add all its successors to the
+        # fringe stack
         if not nextNode[0] in visitedNodes:
             visitedNodes.add(nextNode[0])
             successors = problem.getSuccessors(nextNode[0])
 
-            for successor in range(len(successors)):
-                path = list(nextNode[1])
-                path.append(successors[successor][1])
-                fringe.push((successors[successor][0], path))
+            for idx in range(len(successors)):
+                currentPath = list(nextNode[1])
+                directionOfNextNode = (successors[idx])[1]
+                currentPath.append(directionOfNextNode)
+                nextNodeState = (successors[idx])[0]
+                fringe.push((nextNodeState, currentPath))
 
     util.raiseNotDefined()
 
@@ -126,6 +132,42 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+
+    # Taking fringe as a FIFO queue
+    fringe = util.Queue()
+    startState = (problem.getStartState(), {})
+    fringe.push(startState)
+
+    # Maintain a set of all the visited nodes
+    visitedNodes = set([])
+    visitedNodes.add(startState[0])
+
+    # Start a loop to find a possible path
+    while True:
+
+        # If we are out of fringes, no path exists
+        if fringe.isEmpty():
+            return []
+
+        # Removing that vertex from queue, whose neighbour will be
+        # visited now
+        nextNode = fringe.pop()
+
+        # Check if the goal state is reached in the next node
+        if problem.isGoalState(nextNode[0]):
+            return nextNode[1]
+
+        # Processing all neighbors of vertex
+        neighbors = problem.getSuccessors(nextNode[0])
+        for idx in range(len(neighbors)):
+            if not (neighbors[idx])[0] in visitedNodes:
+                visitedNodes.add((neighbors[idx])[0])
+                currentPath = list(nextNode[1])
+                directionOfNextNode = (neighbors[idx])[1]
+                currentPath.append(directionOfNextNode)
+                nextNodeState = (neighbors[idx])[0]
+                fringe.push((nextNodeState, currentPath))
+
     util.raiseNotDefined()
 
 
