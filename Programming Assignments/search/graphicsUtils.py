@@ -93,6 +93,7 @@ def begin_graphics(width=640, height=480, color=formatColor(0, 0, 0), title=None
     _root_window.bind( "<Button-2>", _rightclick )
     _root_window.bind( "<Button-3>", _rightclick )
     _root_window.bind( "<Control-Button-1>", _ctrl_leftclick)
+    _root_window.attributes("-topmost", True)
     _clear_keys()
 
 _leftclick_loc = None
