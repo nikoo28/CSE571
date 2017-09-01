@@ -174,6 +174,44 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+
+    fringe = util.PriorityQueue()
+    startState = (problem.getStartState(), {})
+    fringe.push(startState, problem.getCostOfActions(startState[1]))
+
+    # Maintain a set of all the visited nodes
+    visitedNodes = set([])
+    visitedNodes.add(startState[0])
+
+    cost = 0
+    # Start a loop to find a possible path
+    while True:
+
+        # If we are out of fringes, no path exists
+        if fringe.isEmpty():
+            return []
+
+        # Removing that vertex from queue, whose neighbour will be
+        # visited now
+        nextNode = fringe.pop()
+
+        # Check if the goal state is reached in the next node
+        if problem.isGoalState(nextNode[0]):
+            return nextNode[1]
+
+        # Processing all neighbors of vertex
+        neighbors = problem.getSuccessors(nextNode[0])
+        cost += 1
+        for idx in range(len(neighbors)):
+            if not (neighbors[idx])[0] in visitedNodes:
+                visitedNodes.add((neighbors[idx])[0])
+                currentPath = list(nextNode[1])
+                directionOfNextNode = (neighbors[idx])[1]
+                currentPath.append(directionOfNextNode)
+                nextNodeState = (neighbors[idx])[0]
+                fringe.push((nextNodeState, currentPath), problem.getCostOfActions(currentPath))
+
+
     util.raiseNotDefined()
 
 
