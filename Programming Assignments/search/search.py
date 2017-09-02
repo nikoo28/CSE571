@@ -88,8 +88,6 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
-
     start_state = problem.getStartState()
     start_path = []
     start_cost = 0
@@ -143,7 +141,6 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
 
     start_state = problem.getStartState()
     start_path = []
@@ -198,7 +195,6 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
 
     start_state = problem.getStartState()
     start_path = []
@@ -262,7 +258,6 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
 
     start_state = problem.getStartState()
     start_path = []
@@ -313,50 +308,9 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                     new_path = next_path + [successor_path]
                     new_cost = problem.getCostOfActions(new_path)
                     new_tuple = (successor_state, new_path, new_cost)
+                    # Determine the heuristic cost
                     heuristic_cost = new_cost + heuristic(successor_state, problem)
                     fringe.push(new_tuple, heuristic_cost)
-
-
-# def aStarSearch(problem, heuristic=nullHeuristic):
-#     """Search the node that has the lowest combined cost and heuristic first."""
-#     "*** YOUR CODE HERE ***"
-#
-#     fringe = util.PriorityQueue()
-#     startState = (problem.getStartState(), {})
-#     startStateCost = heuristic(startState[0], problem)
-#     fringe.push(startState, (problem.getCostOfActions(startState[1]) + startStateCost))
-#
-#     # Maintain a set of all the visited nodes
-#     visitedNodes = set([])
-#     visitedNodes.add(startState[0])
-#
-#     # Start a loop to find a possible path
-#     while True:
-#         # If we are out of fringes, no path exists
-#         if fringe.isEmpty():
-#             return []
-#
-#         # Removing that vertex from queue, whose neighbour will be
-#         # visited now
-#         nextNode = fringe.pop()
-#
-#         # Check if the goal state is reached in the next node
-#         if problem.isGoalState(nextNode[0]):
-#             return nextNode[1]
-#
-#         # Processing all neighbors of vertex
-#         neighbors = problem.getSuccessors(nextNode[0])
-#         for idx in range(len(neighbors)):
-#             if not (neighbors[idx])[0] in visitedNodes:
-#                 visitedNodes.add((neighbors[idx])[0])
-#                 currentPath = list(nextNode[1])
-#                 directionOfNextNode = (neighbors[idx])[1]
-#                 currentPath.append(directionOfNextNode)
-#                 nextNodeState = (neighbors[idx])[0]
-#                 fringe.push((nextNodeState, currentPath),
-#                             (problem.getCostOfActions(currentPath) + heuristic(nextNodeState, problem)))
-#
-#     util.raiseNotDefined()
 
 
 # Abbreviations
