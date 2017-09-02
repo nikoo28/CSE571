@@ -90,13 +90,17 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
 
+    start_state = problem.getStartState()
+    start_path = []
+    start_cost = 0
+
     # Taking fringe as a LIFO stack
     fringe = util.Stack()
-    startState = (problem.getStartState(), {})
-    fringe.push(startState)
+    start_state_tuple = (start_state, start_path, start_cost)
+    fringe.push(start_state_tuple)
 
     # Maintain a set of all the visited nodes
-    visitedNodes = set([])
+    visited_states = set()
 
     # Start a loop to find a possible path
     while True:
@@ -107,40 +111,51 @@ def depthFirstSearch(problem):
 
         # Removing that vertex from queue, whose neighbour will be
         # visited now
-        nextNode = fringe.pop()
+        next_state_tuple = fringe.pop()
+        next_state = next_state_tuple[0]
+        next_path = next_state_tuple[1]
+        next_cost = next_state_tuple[2]
 
         # Check if the goal state is reached in the next node
-        if problem.isGoalState(nextNode[0]):
-            return nextNode[1]
+        if problem.isGoalState(next_state):
+            return next_path
 
         # If the node has not been visited, add all its successors to the
         # fringe stack
-        if not nextNode[0] in visitedNodes:
-            visitedNodes.add(nextNode[0])
-            successors = problem.getSuccessors(nextNode[0])
+        if not next_state in visited_states:
+            visited_states.add(next_state)
 
-            for idx in range(len(successors)):
-                currentPath = list(nextNode[1])
-                directionOfNextNode = (successors[idx])[1]
-                currentPath.append(directionOfNextNode)
-                nextNodeState = (successors[idx])[0]
-                fringe.push((nextNodeState, currentPath))
+            # Get all possible successor states
+            successor_state_tuples = problem.getSuccessors(next_state)
 
-    util.raiseNotDefined()
+            # Insert the states in the fringes
+            for idx in range(len(successor_state_tuples)):
+                successor_state_tuple = successor_state_tuples[idx]
+                successor_state = successor_state_tuple[0]
+                successor_path = successor_state_tuple[1]
+                successor_cost = successor_state_tuple[2]
+
+                if not successor_state in visited_states:
+                    new_path = next_path + [successor_path]
+                    new_tuple = (successor_state, new_path, successor_cost)
+                    fringe.push(new_tuple)
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
 
+    start_state = problem.getStartState()
+    start_path = []
+    start_cost = 0
+
     # Taking fringe as a FIFO queue
     fringe = util.Queue()
-    startState = (problem.getStartState(), {})
-    fringe.push(startState)
+    start_state_tuple = (start_state, start_path, start_cost)
+    fringe.push(start_state_tuple)
 
     # Maintain a set of all the visited nodes
-    visitedNodes = set([])
-    visitedNodes.add(startState[0])
+    visited_states = set()
 
     # Start a loop to find a possible path
     while True:
@@ -151,58 +166,51 @@ def breadthFirstSearch(problem):
 
         # Removing that vertex from queue, whose neighbour will be
         # visited now
-        nextNode = fringe.pop()
+        next_state_tuple = fringe.pop()
+        next_state = next_state_tuple[0]
+        next_path = next_state_tuple[1]
+        next_cost = next_state_tuple[2]
 
         # Check if the goal state is reached in the next node
-        if problem.isGoalState(nextNode[0]):
-            return nextNode[1]
+        if problem.isGoalState(next_state):
+            return next_path
 
-        # Processing all neighbors of vertex
-        neighbors = problem.getSuccessors(nextNode[0])
-        for idx in range(len(neighbors)):
-            if not (neighbors[idx])[0] in visitedNodes:
-                currentPath = list(nextNode[1])
-                directionOfNextNode = (neighbors[idx])[1]
-                currentPath.append(directionOfNextNode)
-                nextNodeState = (neighbors[idx])[0]
-                fringe.push((nextNodeState, currentPath))
-                visitedNodes.add((neighbors[idx])[0])
+        # If the node has not been visited, add all its successors to the
+        # fringe stack
+        if not next_state in visited_states:
+            visited_states.add(next_state)
 
-    util.raiseNotDefined()
+            # Get all possible successor states
+            successor_state_tuples = problem.getSuccessors(next_state)
 
+            # Insert the states in the fringes
+            for idx in range(len(successor_state_tuples)):
+                successor_state_tuple = successor_state_tuples[idx]
+                successor_state = successor_state_tuple[0]
+                successor_path = successor_state_tuple[1]
+                successor_cost = successor_state_tuple[2]
 
-# def uniformCostSearch(problem):
-#     "Search the node of least total cost first. "
-#     "*** YOUR CODE HERE ***"
-#
-#     root = problem.getStartState()
-#     try:
-#         visited = set()
-#         fringe = util.PriorityQueue()
-#         fringe.push((root, [], 0), 0)
-#         while not fringe.isEmpty():
-#             location, path, cost = fringe.pop()
-#             if problem.isGoalState(location):
-#                 return path
-#             if location not in visited:
-#                 visited.add(location)
-#                 for x, y, z in problem.getSuccessors(location):
-#                     if x not in visited:
-#                         fringe.push((x, path + [y], z + cost), z + cost)
-#         return []
-#     except Exception as e:
-#         print e
+                if not successor_state in visited_states:
+                    new_path = next_path + [successor_path]
+                    new_tuple = (successor_state, new_path, successor_cost)
+                    fringe.push(new_tuple)
 
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
 
-    # Maintain a set of all the visited nodes
-    visitedNodes = set()
+    start_state = problem.getStartState()
+    start_path = []
+    start_cost = 0
 
+    # Taking fringe as a FIFO queue
     fringe = util.PriorityQueue()
-    fringe.push((problem.getStartState(), [], 0), 0)
+    start_state_tuple = (start_state, start_path, start_cost)
+    fringe.push(start_state_tuple, problem.getCostOfActions(start_path))
+
+    # Maintain a set of all the visited nodes
+    visited_states = set()
 
     # Start a loop to find a possible path
     while True:
@@ -211,22 +219,73 @@ def uniformCostSearch(problem):
         if fringe.isEmpty():
             return []
 
-        # Removing that vertex from queue, whose neighbour will be visited now
-        nextNodeLocation, nextNodePath, nextNodeCost = fringe.pop()
+        # Removing that vertex from queue, whose neighbour will be
+        # visited now
+        next_state_tuple = fringe.pop()
+        next_state = next_state_tuple[0]
+        next_path = next_state_tuple[1]
+        next_cost = next_state_tuple[2]
 
         # Check if the goal state is reached in the next node
-        if problem.isGoalState(nextNodeLocation):
-            return nextNodePath
+        if problem.isGoalState(next_state):
+            return next_path
 
-        if nextNodeLocation not in visitedNodes:
-            visitedNodes.add(nextNodeLocation)
-            for neighborLocation, neighborPath, neighborCost in problem.getSuccessors(nextNodeLocation):
-                if neighborLocation not in visitedNodes:
-                    fringe.push((neighborLocation, nextNodePath + [neighborPath],
-                                 problem.getCostOfActions(nextNodePath + [neighborPath])),
-                                problem.getCostOfActions(nextNodePath + [neighborPath]))
+        # If the node has not been visited, add all its successors to the
+        # fringe stack
+        if not next_state in visited_states:
+            visited_states.add(next_state)
 
-    util.raiseNotDefined()
+            # Get all possible successor states
+            successor_state_tuples = problem.getSuccessors(next_state)
+
+            # Insert the states in the fringes
+            for idx in range(len(successor_state_tuples)):
+                successor_state_tuple = successor_state_tuples[idx]
+                successor_state = successor_state_tuple[0]
+                successor_path = successor_state_tuple[1]
+                successor_cost = successor_state_tuple[2]
+
+                if not successor_state in visited_states:
+                    new_path = next_path + [successor_path]
+                    new_cost = problem.getCostOfActions(new_path)
+                    new_tuple = (successor_state, new_path, new_cost)
+                    fringe.push(new_tuple, new_cost)
+
+
+# def uniformCostSearch(problem):
+#     """Search the node of least total cost first."""
+#     "*** YOUR CODE HERE ***"
+#
+#     # Maintain a set of all the visited nodes
+#     visitedNodes = set()
+#
+#     fringe = util.PriorityQueue()
+#     fringe.push((problem.getStartState(), [], 0), 0)
+#
+#     # Start a loop to find a possible path
+#     while True:
+#
+#         # If we are out of fringes, no path exists
+#         if fringe.isEmpty():
+#             return []
+#
+#         # Removing that vertex from queue, whose neighbour will be visited now
+#         nextNodeLocation, nextNodePath, nextNodeCost = fringe.pop()
+#
+#         # Check if the goal state is reached in the next node
+#         if problem.isGoalState(nextNodeLocation):
+#             return nextNodePath
+#
+#         if nextNodeLocation not in visitedNodes:
+#             visitedNodes.add(nextNodeLocation)
+#
+#             for neighborLocation, neighborPath, neighborCost in problem.getSuccessors(nextNodeLocation):
+#                 if neighborLocation not in visitedNodes:
+#                     fringe.push((neighborLocation, nextNodePath + [neighborPath],
+#                                  problem.getCostOfActions(nextNodePath + [neighborPath])),
+#                                 problem.getCostOfActions(nextNodePath + [neighborPath]))
+#
+#     util.raiseNotDefined()
 
 
 def nullHeuristic(state, problem=None):
