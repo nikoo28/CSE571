@@ -291,13 +291,13 @@ class CornersProblem(search.SearchProblem):
         self.startingPosition = startingGameState.getPacmanPosition()
         top, right = self.walls.height - 2, self.walls.width - 2
         self.corners = ((1, 1), (1, top), (right, 1), (right, top))
+        print len(self.corners)
         for corner in self.corners:
             if not startingGameState.hasFood(*corner):
                 print 'Warning: no food in corner ' + str(corner)
         self._expanded = 0  # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
 
 
     def getStartState(self):
@@ -305,15 +305,27 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Using the corners along with the start position
+        # Return a tuple of position and the corners in game
+        return self.startingPosition, self.corners
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        # Get the position from tuple and the remaining corners
+        position = state[0]
+        remainingCorners = state[1]
+
+        # If the new reached position is one of the corner, and we are only remaining
+        # with 1 corner, that means it is the last corner
+        # Hence, we have reached the desired goal state
+        if position in self.corners and len(remainingCorners) == 1:
+            return True
+        else:
+            return False
+
 
     def getSuccessors(self, state):
         """
