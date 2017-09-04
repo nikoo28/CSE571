@@ -299,7 +299,6 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
 
-
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
@@ -318,14 +317,13 @@ class CornersProblem(search.SearchProblem):
         position = state[0]
         remainingCorners = state[1]
 
-        # If the new reached position is one of the corner, and we are only remaining
-        # with 1 corner, that means it is the last corner
+        # If the new reached position is one of the corner, and we are remaining
+        # with 0 corners, that means it is the last corner
         # Hence, we have reached the desired goal state
-        if position in self.corners and len(remainingCorners) == 1:
+        if position in self.corners and len(remainingCorners) == 0:
             return True
         else:
             return False
-
 
     def getSuccessors(self, state):
         """
@@ -342,12 +340,31 @@ class CornersProblem(search.SearchProblem):
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
+            # Our state has the position and the remaining corners as a tuple
+            # Re-using the code from def: PositionSearchProblem
+            currentPosition, remainingCorners = state
+            x, y = currentPosition
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:
+                # If this position is not a corner
+                if currentPosition not in self.corners:
+                    nextState = ((nextx, nexty), remainingCorners)
+                else:
+                    # We need to reduce the number of corners
+                    # We iterate over each of the remaining corners
+                    newCorners = tuple()
+                    for idx in remainingCorners:
+                        if currentPosition == idx:
+                            continue
+                        else:
+                            newCorners += (idx,)
+                    nextState = ((nextx, nexty), newCorners)
+
+                cost = 1
+                successors.append((nextState, action, cost))
 
         self._expanded += 1  # DO NOT CHANGE
         return successors
