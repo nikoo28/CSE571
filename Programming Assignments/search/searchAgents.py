@@ -343,26 +343,22 @@ class CornersProblem(search.SearchProblem):
 
             # Our state has the position and the remaining corners as a tuple
             # Re-using the code from def: PositionSearchProblem
+
             currentPosition, remainingCorners = state
             x, y = currentPosition
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
             if not hitsWall:
-                # If this position is not a corner
-                if currentPosition not in self.corners:
-                    nextState = ((nextx, nexty), remainingCorners)
-                else:
-                    # We need to reduce the number of corners
-                    # We iterate over each of the remaining corners
-                    newCorners = tuple()
-                    for idx in remainingCorners:
-                        if currentPosition == idx:
-                            continue
-                        else:
-                            newCorners += (idx,)
-                    nextState = ((nextx, nexty), newCorners)
-
+                # We need to reduce the number of corners
+                newCorners = tuple()
+                # Iterating over each of the remaining corner
+                for idx in remainingCorners:
+                    if (nextx, nexty) == idx:
+                        continue
+                    else:
+                        newCorners += (idx,)
+                nextState = ((nextx, nexty), newCorners)
                 cost = 1
                 successors.append((nextState, action, cost))
 
