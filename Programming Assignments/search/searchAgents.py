@@ -395,8 +395,19 @@ def cornersHeuristic(state, problem):
     corners = problem.corners  # These are the corner coordinates
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"
-    return 0  # Default to trivial solution
+    # We are using the manhattan distance as the heuristic
+    # Applying a greedy approach to the problem, it is always the best choice
+    # to cover the greatest distance first, followed by all the small distances
+    # This promises an optimal solution
+    distancesToCorners = [0]
+    position, remainingCorners = state
+
+    for corner in remainingCorners:
+        manhattanDistance = util.manhattanDistance(position, corner)
+        distancesToCorners.append(manhattanDistance)
+
+    # Returning the maximum distance among the distances to corners
+    return max(distancesToCorners)
 
 
 class AStarCornersAgent(SearchAgent):
@@ -497,7 +508,32 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+
+    position, foodGrid = state
+
+    distances = [0]
+    for food in foodGrid.asList():
+        # Using manhattan distance expands 9551 nodes
+        # distances.append(util.manhattanDistance(position, food))
+
+        # An optimal heurisitc would be one that can accurately determine the
+        # actual distance between the position of pacman and the food
+        # A BFS search technique could help us to determine what is the
+        # distance to the dot from the pacman position
+
+        # Using the PositionSearchProblem to find the bfsPath
+        gameState = problem.startingGameState
+        positionSearchProblemProblem = PositionSearchProblem(
+            gameState, goal=food, start=position, warn=False, visualize=False)
+        bfsPath = search.breadthFirstSearch(positionSearchProblemProblem)
+
+        # The length of this bfsPath would give the distance between the two points
+        bfsDistance = len(bfsPath)
+        distances.append(bfsDistance)
+
+    # Returning the maximum of these distances for an optimal heuristic
+    distanceFurthest = max(distances)
+    return distanceFurthest
 
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -529,8 +565,8 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Using the A Star search for the most cost effective solution that combines everything
+        return search.aStarSearch(problem)
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -566,8 +602,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x, y = state
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # If this position contains food, then this is goal state
+        return self.food[x][y]
 
 
 def mazeDistance(point1, point2, gameState):

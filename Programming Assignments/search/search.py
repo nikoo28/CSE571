@@ -245,7 +245,7 @@ def uniformCostSearch(problem):
                     new_path = next_path + [successor_path]
                     new_cost = problem.getCostOfActions(new_path)
                     new_tuple = (successor_state, new_path, new_cost)
-                    fringe.push(new_tuple, new_cost)
+                    fringe.update(new_tuple, new_cost)
 
 
 def nullHeuristic(state, problem=None):
@@ -310,7 +310,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                     new_tuple = (successor_state, new_path, new_cost)
                     # Determine the heuristic cost
                     heuristic_cost = new_cost + heuristic(successor_state, problem)
-                    fringe.push(new_tuple, heuristic_cost)
+                    fringe.update(new_tuple, heuristic_cost)
 
 
 # Abbreviations
