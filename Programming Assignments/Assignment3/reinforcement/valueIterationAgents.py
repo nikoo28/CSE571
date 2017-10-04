@@ -53,8 +53,10 @@ class ValueIterationAgent(ValueEstimationAgent):
 
         for i in range(self.iterations):
 
+            # NOT modify the original values, but create a copy
             newQValues = self.values.copy()
 
+            # Iterate over each of the possible state in each iteration
             for state in states:
 
                 if not self.mdp.isTerminal(state):
