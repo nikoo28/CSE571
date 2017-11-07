@@ -191,6 +191,7 @@ class GreedyBustersAgent(BustersAgent):
         closest_ghost_position = min(living_ghost_distances)[1]
 
         # Find the best action
+        # The best action would be when we have the minum distance after action
         best_action = None
         min_distance = float("inf")
         for action in legal:
