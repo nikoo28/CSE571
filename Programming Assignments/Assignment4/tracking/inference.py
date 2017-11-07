@@ -364,8 +364,15 @@ class ParticleFilter(InferenceModule):
         util.sample(Counter object) is a helper method to generate a sample from
         a belief distribution.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # "*** YOUR CODE HERE ***"
+
+        particles = self.particles
+
+        self.particles = []
+        for particle in particles:
+            new_position_distribution = self.getPositionDistribution(self.setGhostPosition(gameState, particle))
+            self.particles.append(util.sample(new_position_distribution))
+
 
     def getBeliefDistribution(self):
         """
