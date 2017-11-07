@@ -150,7 +150,7 @@ class ExactInference(InferenceModule):
         emissionModel = busters.getObservationDistribution(noisyDistance)
         pacmanPosition = gameState.getPacmanPosition()
 
-        "*** YOUR CODE HERE ***"
+        # "*** YOUR CODE HERE ***"
 
         allPossible = util.Counter()
 
@@ -161,12 +161,13 @@ class ExactInference(InferenceModule):
         # Handle noisyDistance is None
         # noisyDistance is the estimated manhattan distance to the ghost
         if noisyDistance is None:
-            allPossible[self.getJailPosition()] = 1.0
+            jailPosition = self.getJailPosition()
+            allPossible[jailPosition] = 1.0
         else:
             for p in self.legalPositions:
                 allPossible[p] = self.beliefs[p] * emissionModel[util.manhattanDistance(p, pacmanPosition)]
 
-        "*** END YOUR CODE HERE ***"
+        # "*** END YOUR CODE HERE ***"
 
         allPossible.normalize()
         self.beliefs = allPossible
@@ -224,8 +225,26 @@ class ExactInference(InferenceModule):
         are used and how they combine to give us a belief distribution over new
         positions after a time update from a particular position.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # "*** YOUR CODE HERE ***"
+
+        allPossible = util.Counter()
+
+        # Iterating over all the legal positions
+        for position in self.legalPositions:
+
+            # Get new position distribution given the old position
+            newPositionDistribution = self.getPositionDistribution(self.setGhostPosition(gameState, position))
+
+            for item in newPositionDistribution.items():
+                newPosition = item[0]
+                probability = item[1]
+
+                # New expected value
+                expValue = allPossible[newPosition] + probability * self.beliefs[position]
+                allPossible[newPosition] = expValue
+
+        allPossible.normalize()
+        self.beliefs = allPossible
 
     def getBeliefDistribution(self):
         return self.beliefs
