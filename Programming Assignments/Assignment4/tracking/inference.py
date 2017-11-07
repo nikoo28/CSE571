@@ -373,7 +373,6 @@ class ParticleFilter(InferenceModule):
             new_position_distribution = self.getPositionDistribution(self.setGhostPosition(gameState, particle))
             self.particles.append(util.sample(new_position_distribution))
 
-
     def getBeliefDistribution(self):
         """
         Return the agent's current belief state, a distribution over ghost
@@ -383,12 +382,12 @@ class ParticleFilter(InferenceModule):
         """
         # "*** YOUR CODE HERE ***"
 
-        distribution = util.Counter()
+        allPossible = util.Counter()
         for particle in self.particles:
-            distribution[particle] += 1.0
+            allPossible[particle] += 1.0
 
-        distribution.normalize()
-        return distribution
+        allPossible.normalize()
+        return allPossible
 
 
 class MarginalInference(InferenceModule):
@@ -462,7 +461,29 @@ class JointParticleFilter:
         Storing your particles as a Counter (where there could be an associated
         weight with each position) is incorrect and may produce errors.
         """
-        "*** YOUR CODE HERE ***"
+        # "*** YOUR CODE HERE ***"
+
+        possible_positions = itertools.product(self.legalPositions, repeat=self.numGhosts)
+
+        possible_positions_array = []
+        for possible_position in possible_positions:
+            possible_positions_array.append(possible_position)
+
+        random.shuffle(possible_positions_array)
+
+        self.particles = []
+        i, j = 0, 0
+        while True:
+
+            if j == len(possible_positions_array):
+                j = 0
+
+            if i == self.numParticles:
+                break
+
+            self.particles.append(possible_positions_array[j])
+            i += 1
+            j += 1
 
     def addGhostAgent(self, agent):
         """
@@ -509,7 +530,41 @@ class JointParticleFilter:
             return
         emissionModels = [busters.getObservationDistribution(dist) for dist in noisyDistances]
 
-        "*** YOUR CODE HERE ***"
+        allPossible = util.Counter()
+
+        for particle in self.particles:
+
+            position_weight = 1.0
+            ghost_idx = 0
+            while ghost_idx < self.numGhosts:
+
+                # When the ghost is captured by pacman
+                if noisyDistances[ghost_idx] is None:
+                    particle = self.getParticleWithGhostInJail(particle, ghost_idx)
+                    ghost_idx += 1
+                    continue
+
+                distance_to_ghost = util.manhattanDistance(particle[ghost_idx], pacmanPosition)
+                position_weight = position_weight * emissionModels[ghost_idx][distance_to_ghost]
+
+                ghost_idx += 1
+
+            allPossible[particle] = allPossible[particle] + position_weight
+
+        # If all particles are getting 0 weight
+        flag = True
+        for weight in allPossible.values():
+            if weight != 0:
+                flag = False
+
+        if flag is True:
+            self.initializeParticles()
+            return
+
+        allPossible.normalize()
+        self.particles = []
+        for _ in range(self.numParticles):
+            self.particles.append(util.sample(allPossible))
 
     def getParticleWithGhostInJail(self, particle, ghostIndex):
         """
@@ -571,13 +626,26 @@ class JointParticleFilter:
 
             "*** YOUR CODE HERE ***"
 
+            state = setGhostPositions(gameState, newParticle)
+            ghost_idx = 0
+            while ghost_idx < len(newParticle):
+                new_position_distribution = getPositionDistributionForGhost(state, ghost_idx, self.ghostAgents[ghost_idx])
+                newParticle[ghost_idx] = util.sample(new_position_distribution)
+                ghost_idx += 1
+
             "*** END YOUR CODE HERE ***"
             newParticles.append(tuple(newParticle))
         self.particles = newParticles
 
     def getBeliefDistribution(self):
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        allPossible = util.Counter()
+        for particle in self.particles:
+            allPossible[particle] += 1.0
+
+        allPossible.normalize()
+        return allPossible
 
 
 # One JointInference module is shared globally across instances of MarginalInference
