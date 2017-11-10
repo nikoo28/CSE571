@@ -1,4 +1,0 @@
-gym
-tensorflow
-opencv-python
-Pillow
